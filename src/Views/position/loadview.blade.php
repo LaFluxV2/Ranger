@@ -1,0 +1,35 @@
+<?php
+    $mod_items = ExtensionsValley\Modulemanager\Models\Modulemanager::getItemwithPosition($position);
+    $current_url = Request::path();
+    if(sizeof($mod_items)){
+        foreach($mod_items as $mod_item){
+            if(trim($mod_item->params)){
+                $params = (array)json_decode($mod_item->params);
+            }else{
+                $params = [];
+            }
+            if($mod_item->is_all_page == 1){
+                ?>
+                @if(trim($mod_item->custom_html) != "")
+                    {!! $mod_item->custom_html !!}
+                @else
+                    @includeIf($mod_item->layout,$params)
+                @endif
+                <?php
+            }else{
+                $slugs = explode(",",$mod_item->pages);
+                if(in_array($current_url,$slugs)){
+                   ?>
+                    @if(trim($mod_item->custom_html) != "")
+                        {!! $mod_item->custom_html !!}
+                    @else
+                        @includeIf($mod_item->layout,$params)
+                    @endif
+                <?php
+                }
+            }
+        }
+    }
+
+
+?>
